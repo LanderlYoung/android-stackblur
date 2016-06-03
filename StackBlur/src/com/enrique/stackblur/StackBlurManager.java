@@ -26,9 +26,11 @@
 
 package com.enrique.stackblur;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.v8.renderscript.RSRuntimeException;
+import android.os.Build;
+import android.renderscript.RSRuntimeException;
 import android.util.Log;
 
 import java.io.FileOutputStream;
@@ -36,10 +38,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class StackBlurManager {
-	static final int EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors();
-	static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(EXECUTOR_THREADS);
+    static final int EXECUTOR_THREADS = 4;// Runtime.getRuntime().availableProcessors();
+    static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(EXECUTOR_THREADS);
 
-	private static volatile boolean hasRS = true;
+    private static volatile boolean hasRS = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
+
 
 	/**
 	 * Original image
@@ -118,7 +121,8 @@ public class StackBlurManager {
 	 * @param context renderscript requires an android context
 	 * @param radius
 	 */
-	public Bitmap processRenderScript(Context context, float radius) {
+    @TargetApi(11)
+    public Bitmap processRenderScript(Context context, float radius) {
 		BlurProcess blurProcess;
 		// The renderscript support library doesn't have .so files for ARMv6.
 		// Remember if there is an error creating the renderscript context,

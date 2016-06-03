@@ -42,6 +42,7 @@ static unsigned char const stackblur_shr[255] =
         24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24
 };
 
+//config
 rs_allocation gIn;
 
 uint32_t width;

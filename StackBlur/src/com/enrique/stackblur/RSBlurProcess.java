@@ -1,16 +1,19 @@
 package com.enrique.stackblur;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.support.v8.renderscript.Allocation;
-import android.support.v8.renderscript.Element;
-import android.support.v8.renderscript.RenderScript;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 
 /**
  * @see JavaBlurProcess
  * Blur using renderscript.
  */
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 class RSBlurProcess implements BlurProcess {
 	private final Context context;
 	private final RenderScript _rs;
@@ -22,13 +25,20 @@ class RSBlurProcess implements BlurProcess {
 
 	@Override
 	public Bitmap blur(Bitmap original, float radius) {
+		return blurWithCustomRs(original, radius);
+    }
+
+	private Bitmap blurWithCustomRs(Bitmap original, float radius) {
 		int width = original.getWidth();
 		int height = original.getHeight();
 		Bitmap blurred = original.copy(Bitmap.Config.ARGB_8888, true);
-
 		ScriptC_blur blurScript = new ScriptC_blur(_rs, context.getResources(), R.raw.blur);
 
-		Allocation inAllocation = Allocation.createFromBitmap(_rs, blurred, Allocation.MipmapControl.MIPMAP_NONE, Allocation.USAGE_SCRIPT);
+		Allocation inAllocation = Allocation.createFromBitmap(
+				_rs,
+				blurred,
+				Allocation.MipmapControl.MIPMAP_NONE,
+				Allocation.USAGE_SCRIPT);
 
 		blurScript.set_gIn(inAllocation);
 		blurScript.set_width(width);
